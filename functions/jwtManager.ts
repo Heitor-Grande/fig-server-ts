@@ -23,6 +23,7 @@ async function criaJWT() {
         const token = sign({ user_id: 0 }, process.env.JWT_KEY, { expiresIn: "2h" })
         return token
     } catch (error) {
+        console.log(error)
         throw new HttpException("Erro ao criar novo JWT publico", HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }
