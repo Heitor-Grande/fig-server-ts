@@ -1,3 +1,4 @@
+import { HttpException, HttpStatus } from "@nestjs/common"
 import { compareSync, genSaltSync, hashSync } from "bcrypt-ts"
 //o que é um hash?
 //=> é projetado para converter um valor (como uma senha) em um código que não pode ser decodificado para o valor original
@@ -32,7 +33,7 @@ function validarHash(info: string, hash: string) {
     } catch (error) {
         console.error("Erro ao validar hash: " + error)
         //disparo erro para cair no catch da função chamadora
-        throw new Error("Erro ao validar hash.")
+        throw new HttpException("Erro ao validar hash.", HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }
 //função para criptografar informações

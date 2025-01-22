@@ -1,22 +1,6 @@
-import { verify, sign } from "jsonwebtoken"
-import { NextFunction, Request } from "express"
+import { sign } from "jsonwebtoken"
 import { HttpException, HttpStatus } from "@nestjs/common"
-//verifica jwt publico
-function verificaJWT(req: Request, next: NextFunction) {
-    try {
-        verify(req.headers.authorization, process.env.JWT_KEY, function (erro) {
-            if (erro) {
-                throw new HttpException("Token Público Inválido", HttpStatus.UNAUTHORIZED)
-            }
-            else {
-                next()
-            }
-        })
-    } catch (error) {
-        console.error('Erro ao verificar JWT público:', error)
-        throw new HttpException('Erro ao verificar JWT público.', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-}
+
 //cria JWT publico
 async function criaJWT() {
     try {
@@ -27,7 +11,18 @@ async function criaJWT() {
         throw new HttpException("Erro ao criar novo JWT publico", HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }
+//cria JTW para usuario que fez login
+async function criaJWTLogin(email: string, senha: string, idUsuario: string) {
+    sign({ emailLogado: email, senhaLogado: senha, idUsuario: idUsuario }, process.env.JWT_KEY_LOGIN, { expiresIn: "120h" }, function (erro, token) {
+        if (erro) {
+            throw new HttpException("Erro ao gerar token de Login", HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+        else {
+            return token
+        }
+    })
+}
 export default {
-    verificaJWT,
-    criaJWT
+    criaJWT,
+    criaJWTLogin
 }
