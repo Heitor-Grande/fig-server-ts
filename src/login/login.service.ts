@@ -5,6 +5,7 @@ import hashManager from 'functions/hashManager';
 import jwtManager from 'functions/jwtManager';
 @Injectable()
 export class LoginService {
+    //função para fazer o login de fato
     async fazerLogin(login: login) {
         try {
             const sqlSelectUsuario = `SELECT email, senha, id_usuario, ativo  FROM usuario WHERE email = $1`
