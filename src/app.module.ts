@@ -20,5 +20,6 @@ import { VerifyloginusuarioMiddleware } from './verifyloginusuario/verifyloginus
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(JwtpublicverifyMiddleware).forRoutes(CadContaController, LoginController)
+    consumer.apply(VerifyloginusuarioMiddleware).forRoutes(VerificaLoginController)
   }
 }
