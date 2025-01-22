@@ -11,15 +11,19 @@ import { JwtpublicverifyMiddleware } from './jwtpublicverify/jwtpublicverify.mid
 import { VerificaLoginController } from './verifica-login/verifica-login.controller';
 import { VerificaLoginService } from './verifica-login/verifica-login.service';
 import { VerifyloginusuarioMiddleware } from './verifyloginusuario/verifyloginusuario.middleware';
+import { AutologinController } from './autologin/autologin.controller';
+import { AutologinService } from './autologin/autologin.service';
 
 @Module({
   imports: [],
-  controllers: [AppController, PublicController, CadContaController, LoginController, VerificaLoginController],
-  providers: [AppService, PublicService, CadContaService, LoginService, VerificaLoginService],
+  controllers: [AppController, PublicController, CadContaController, LoginController, VerificaLoginController, AutologinController],
+  providers: [AppService, PublicService, CadContaService, LoginService, VerificaLoginService, AutologinService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
+    //middleware para rotas dentro da aplicação (antes do login) - public
     consumer.apply(JwtpublicverifyMiddleware).forRoutes(CadContaController, LoginController)
+    //middleware para rotas dentro da aplicação (pós login)
     consumer.apply(VerifyloginusuarioMiddleware).forRoutes(VerificaLoginController)
   }
 }
