@@ -8,9 +8,9 @@ function gerarHash(info: string) {
         const salt = genSaltSync(10)
         //gerando o hash da info
         const hash = hashSync(info, salt)
-        //retornando a info criptografada
+        //retornando o hash da info
         return {
-            infoCriptografada: hash,
+            infoHash: hash,
             salt: salt
         }
     } catch (error) {
