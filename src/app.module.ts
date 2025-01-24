@@ -15,11 +15,13 @@ import { AutologinController } from './autologin/autologin.controller';
 import { AutologinService } from './autologin/autologin.service';
 import { UsuarioController } from './usuario/usuario.controller';
 import { UsuarioService } from './usuario/usuario.service';
+import { MeusArquivosController } from './meus-arquivos/meus-arquivos.controller';
+import { MeusArquivosService } from './meus-arquivos/meus-arquivos.service';
 
 @Module({
   imports: [],
-  controllers: [AppController, PublicController, CadContaController, LoginController, VerificaLoginController, AutologinController, UsuarioController],
-  providers: [AppService, PublicService, CadContaService, LoginService, VerificaLoginService, AutologinService, UsuarioService],
+  controllers: [AppController, PublicController, CadContaController, LoginController, VerificaLoginController, AutologinController, UsuarioController, MeusArquivosController],
+  providers: [AppService, PublicService, CadContaService, LoginService, VerificaLoginService, AutologinService, UsuarioService, MeusArquivosService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
