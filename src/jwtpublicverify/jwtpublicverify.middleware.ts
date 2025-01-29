@@ -11,5 +11,11 @@ export class JwtpublicverifyMiddleware implements NestMiddleware {
         next()
       }
     })
+    try {
+      verify(req.headers.authorization, process.env.JWT_KEY)
+      next()
+    } catch (error) {
+      throw new HttpException("Token Público Inválido", HttpStatus.UNAUTHORIZED)
+    }
   }
 }

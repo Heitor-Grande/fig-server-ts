@@ -34,7 +34,7 @@ export class LoginService {
                 throw new HttpException("Senha e/ou E-mail inválido(s)", HttpStatus.NOT_ACCEPTABLE)
             }
         } catch (error) {
-            throw new HttpException(error.response || "Um erro inesperado ocorreu durante o Login", error.status || HttpStatus.INTERNAL_SERVER_ERROR)
+           throw new HttpException(error.response || "Um erro inesperado ocorreu durante o Login", error.status || HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 }

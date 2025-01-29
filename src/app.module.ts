@@ -21,11 +21,13 @@ import { ControleCaixaController } from './controle-caixa/controle-caixa.control
 import { ControleCaixaService } from './controle-caixa/controle-caixa.service';
 import { DashboardController } from './dashboard/dashboard.controller';
 import { DashboardService } from './dashboard/dashboard.service';
+import { RecsenhaUsuarioController } from './recsenha-usuario/recsenha-usuario.controller';
+import { RecsenhaUsuarioService } from './recsenha-usuario/recsenha-usuario.service';
 
 @Module({
   imports: [],
-  controllers: [AppController, PublicController, CadContaController, LoginController, VerificaLoginController, AutologinController, UsuarioController, MeusArquivosController, ControleCaixaController, DashboardController],
-  providers: [AppService, PublicService, CadContaService, LoginService, VerificaLoginService, AutologinService, UsuarioService, MeusArquivosService, ControleCaixaService, DashboardService],
+  controllers: [AppController, PublicController, CadContaController, LoginController, VerificaLoginController, AutologinController, UsuarioController, MeusArquivosController, ControleCaixaController, DashboardController, RecsenhaUsuarioController],
+  providers: [AppService, PublicService, CadContaService, LoginService, VerificaLoginService, AutologinService, UsuarioService, MeusArquivosService, ControleCaixaService, DashboardService, RecsenhaUsuarioService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
