@@ -32,7 +32,7 @@ import { RecsenhaUsuarioService } from './recsenha-usuario/recsenha-usuario.serv
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     //middleware para rotas dentro da aplicação (antes do login) - public
-    consumer.apply(JwtpublicverifyMiddleware).forRoutes(CadContaController, LoginController)
+    consumer.apply(JwtpublicverifyMiddleware).forRoutes(CadContaController, LoginController, RecsenhaUsuarioController)
     //middleware para rotas dentro da aplicação (pós login)
     consumer.apply(VerifyloginusuarioMiddleware).forRoutes(VerificaLoginController)
   }
