@@ -1,12 +1,13 @@
 import { Client } from "pg"
 import { config } from "dotenv"
 config()
+
 const connection = new Client({
-    user: process.env.USER,
-    password: process.env.PASSWORD,
-    host: process.env.HOST,
-    port: parseInt(process.env.PORT_DB),
-    database: process.env.DATABASE
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    host: process.env.DB_HOST,
+    port: parseInt(process.env.DB_PORT_DB),
+    database: process.env.DB_NAME
 })
 try {
     connection.connect()
