@@ -1,13 +1,19 @@
-import { Module } from "@nestjs/common";
-import { AutologinController } from "src/autologin/autologin.controller";
-import { AutologinService } from "src/autologin/autologin.service";
+import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
+import { VerifyloginusuarioMiddleware } from "src/utils/verifyloginusuario.middleware";
+import { CadContaController } from "./cad-conta.controller";
+import { CadContaService } from "./cad-conta.service";
 
 
 @Module({
-    providers: [AutologinService],
-    controllers: [AutologinController]
+    providers: [CadContaService],
+    controllers: [CadContaController]
 })
 
-export class cadContaModule {
+export class cadContaModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+
+        consumer.apply(VerifyloginusuarioMiddleware).forRoutes(CadContaController)
+    }
+} {
 
 }

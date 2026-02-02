@@ -1,6 +1,7 @@
-import { Module } from '@nestjs/common'
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
 import { LoginController } from './login.controller'
 import { LoginService } from './login.service'
+import { VerifyloginusuarioMiddleware } from 'src/utils/verifyloginusuario.middleware'
 
 
 @Module({
@@ -8,6 +9,9 @@ import { LoginService } from './login.service'
     controllers: [LoginController]
 })
 
-export class LoginModule {
-    
+export class LoginModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+
+        consumer.apply(VerifyloginusuarioMiddleware).forRoutes(LoginController)
+    }
 }
