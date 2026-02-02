@@ -1,15 +1,6 @@
 import { sign } from "jsonwebtoken"
 import { HttpException, HttpStatus } from "@nestjs/common"
 
-//cria JWT publico
-async function criaJWT() {
-    try {
-        const token = sign({ user_id: 0 }, process.env.JWT_KEY, { expiresIn: "2h" })
-        return token
-    } catch (error) {
-        throw new HttpException("Erro ao criar novo JWT publico", HttpStatus.INTERNAL_SERVER_ERROR)
-    }
-}
 //cria JTW para usuario que fez login
 function criaJWTLogin(email: string, senha: string, idUsuario: string) {
     try {
@@ -20,6 +11,6 @@ function criaJWTLogin(email: string, senha: string, idUsuario: string) {
     }
 }
 export default {
-    criaJWT,
+
     criaJWTLogin
 }

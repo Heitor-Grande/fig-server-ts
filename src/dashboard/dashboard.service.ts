@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import connection from 'database/connection';
+import connection from 'src/database/connection';
 
 @Injectable()
 export class DashboardService {

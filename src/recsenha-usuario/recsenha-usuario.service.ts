@@ -1,10 +1,10 @@
 import { Injectable, HttpException, HttpStatus, } from '@nestjs/common';
-import connection from 'database/connection';
+import connection from 'src/database/connection';
 import { verify } from "jsonwebtoken"
 import gerarTokenRecSenha from './gerarTokenRecSenha';
 import GerarPaginaHtml from './gerarHtmlEmail';
 import { createTransport } from "nodemailer"
-import hashManager from 'functions/hashManager';
+import hashManager from 'src/utils/hashManager';
 interface tokenType {
     codigo: string
 }

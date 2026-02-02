@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { login } from './login.dto';
-import connection from 'database/connection';
-import hashManager from 'functions/hashManager';
-import jwtManager from 'functions/jwtManager';
+import connection from 'src/database/connection';
+import hashManager from 'src/utils/hashManager';
+import jwtManager from 'src/utils/jwtManager';
 @Injectable()
 export class LoginService {
     //função para fazer o login de fato

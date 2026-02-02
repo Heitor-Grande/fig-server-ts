@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { cadContaDto } from './cad-conta.dto';
-import connection from 'database/connection';
-import hashManager from 'functions/hashManager';
+import connection from 'src/database/connection';
+import hashManager from 'src/utils/hashManager';
 @Injectable()
 export class CadContaService {
     async cadastrarUsuario(conta: cadContaDto) {
