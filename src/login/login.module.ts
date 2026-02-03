@@ -9,9 +9,6 @@ import { VerifyloginusuarioMiddleware } from 'src/utils/verifyloginusuario.middl
     controllers: [LoginController]
 })
 
-export class LoginModule implements NestModule {
-    configure(consumer: MiddlewareConsumer) {
+export class LoginModule {
 
-        consumer.apply(VerifyloginusuarioMiddleware).forRoutes(LoginController)
-    }
 }
