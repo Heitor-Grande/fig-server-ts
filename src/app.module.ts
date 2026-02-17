@@ -11,16 +11,14 @@ import { MeusArquivosModule } from './meus-arquivos/meus-arquivos.module';
 import { RecsenhaModule } from './recsenha-usuario/recsenha-usuario.module';
 import { usuarioModule } from './usuario/usuario.module';
 import { VerificaLoginModule } from './verifica-login/verifica-login.module';
+import { LembreteController } from './lembrete/lembrete.controller';
+import { LembreteModule } from './lembrete/lembrete.module';
 
 @Module({
-  imports: [AutologinModule, cadContaModule, controleCaixaModule,DashboardModule, LoginModule, MeusArquivosModule, RecsenhaModule, usuarioModule, VerificaLoginModule],
+  imports: [AutologinModule, cadContaModule, controleCaixaModule, DashboardModule, LoginModule, MeusArquivosModule, RecsenhaModule, usuarioModule, VerificaLoginModule, LembreteModule],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
+export class AppModule {
 
-    //middleware para rotas dentro da aplicação (pós login)
-    consumer.apply(VerifyloginusuarioMiddleware).forRoutes()
-  }
 }
