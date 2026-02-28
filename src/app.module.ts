@@ -13,11 +13,14 @@ import { usuarioModule } from './usuario/usuario.module';
 import { VerificaLoginModule } from './verifica-login/verifica-login.module';
 import { LembreteController } from './lembrete/lembrete.controller';
 import { LembreteModule } from './lembrete/lembrete.module';
+import { InscricaopushService } from './inscricaopush/inscricaopush.service';
+import { InscricaopushController } from './inscricaopush/inscricaopush.controller';
+import { InscricaopushModule } from './inscricaopush/inscricaopush.module';
 
 @Module({
-  imports: [AutologinModule, cadContaModule, controleCaixaModule, DashboardModule, LoginModule, MeusArquivosModule, RecsenhaModule, usuarioModule, VerificaLoginModule, LembreteModule],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [AutologinModule, cadContaModule, controleCaixaModule, DashboardModule, LoginModule, MeusArquivosModule, RecsenhaModule, usuarioModule, VerificaLoginModule, LembreteModule, InscricaopushModule],
+  controllers: [AppController, InscricaopushController],
+  providers: [AppService, InscricaopushService],
 })
 export class AppModule {
 

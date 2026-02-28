@@ -36,7 +36,7 @@ export class LoginService {
         } catch (error) {
 
             console.log(error)
-           throw new HttpException(error.response || "Um erro inesperado ocorreu durante o Login", error.status || HttpStatus.INTERNAL_SERVER_ERROR)
+            throw new HttpException(error.response || "Um erro inesperado ocorreu durante o Login", error.status || HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 }

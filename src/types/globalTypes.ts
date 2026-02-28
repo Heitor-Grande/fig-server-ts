@@ -1,12 +1,25 @@
+import { PushSubscription } from "web-push"
+
 export interface LembreteType {
     id: string
-    idusuario:string
+    idusuario: string
     titulo: string
     dataCriacao: string
     descricao: string
     dataDoDisparo: string // formato: "YYYY-MM-DDTHH:mm"
     recorrencia: "Semanal" | "Diario" | "Mensal" | "Anual" | "Unico"
     readOnly: boolean
+}
+
+export interface incricaoPushBody{
+    idusuario: string
+    inscricao: PushSubscription
+}
+
+export interface notify {
+    title: string,
+    body: string,
+    url: string
 }
 
 
