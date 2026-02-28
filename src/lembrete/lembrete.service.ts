@@ -32,7 +32,8 @@ export class LembreteService {
                 datadodisparo as "dataDoDisparo", 
                 recorrencia, 
                 datacriacao as "dataCriacao",
-                true as "readOnly"
+                true as "readOnly",
+                disparado
             FROM public.lembretes
             WHERE idusuario = $1
         `
