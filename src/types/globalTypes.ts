@@ -11,18 +11,18 @@ export interface LembreteType {
     readOnly: boolean
 }
 
-export interface incricaoPushBody{
+export interface incricaoPushBodyType{
     idusuario: string
     inscricao: PushSubscription
 }
 
-export interface notify {
+export interface notifyType {
     title: string,
     body: string,
-    url: string
+    data: object
 }
 
 
-export interface typeModalLoad {
+export interface typeModalLoadType {
     carregando: boolean, mensagem: string
 }

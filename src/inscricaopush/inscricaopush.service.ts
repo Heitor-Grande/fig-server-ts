@@ -1,11 +1,11 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import connection from 'src/database/connection';
-import { incricaoPushBody } from 'src/types/globalTypes';
+import { incricaoPushBodyType } from 'src/types/globalTypes';
 
 @Injectable()
 export class InscricaopushService {
 
-    async criarIncricaoPush(body: incricaoPushBody) {
+    async criarIncricaoPush(body: incricaoPushBodyType) {
 
         try {
 
