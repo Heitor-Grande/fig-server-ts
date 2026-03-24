@@ -6,7 +6,7 @@ export interface LembreteType {
     titulo: string
     dataCriacao: string
     descricao: string
-    dataDoDisparo: string // "YYYY-MM-DD"
+    dataDoDisparo: string // "YYYY-MM-DDThh:mm:ss"
     recorrencia: "Diario" | "Unico"
     readOnly: boolean
     disparado: boolean
@@ -26,4 +26,19 @@ export interface notifyType {
 
 export interface typeModalLoadType {
     carregando: boolean, mensagem: string
+}
+
+export interface diaAgendaType {
+    id: string;
+    horaInicio: string;
+    horaFim: string;
+    dia: string;
+    mes: string;
+    ano: string;
+    nomeCompleto: string;
+    celular: string;
+    email: string
+    cpf: string
+    observacao: string
+    status: string
 }

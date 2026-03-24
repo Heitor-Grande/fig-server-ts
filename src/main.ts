@@ -15,7 +15,6 @@ async function bootstrap() {
   app.use(bodyParser.json({ limit: '10mb' }))
 
   await app.listen(8080)
-
   dispararJobs()
 }
 

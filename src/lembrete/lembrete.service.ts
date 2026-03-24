@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { LembreteType } from 'src/types/globalTypes';
 import connection from 'src/database/connection';
 
@@ -47,6 +47,24 @@ export class LembreteService {
     }
 
     async atualizarLembrete(body: LembreteType) {
+        
+        //verificar se a data para lembrete é anterior a data atual(hora local)
+        const dataAtual = new Date(
+            new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })
+        )
+
+        const dataLembrete = new Date(
+            new Date(body.dataDoDisparo).toLocaleString("en-US", {
+                timeZone: "America/Sao_Paulo"
+            })
+        )
+
+        if (dataLembrete < dataAtual) {
+
+            throw new BadRequestException(
+                "Não é possível agendar Lembrete em data passada."
+            )
+        }
 
         const sqlUpdate = `
         UPDATE public.lembretes

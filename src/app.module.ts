@@ -16,9 +16,10 @@ import { LembreteModule } from './lembrete/lembrete.module';
 import { InscricaopushService } from './inscricaopush/inscricaopush.service';
 import { InscricaopushController } from './inscricaopush/inscricaopush.controller';
 import { InscricaopushModule } from './inscricaopush/inscricaopush.module';
+import { AgendaModule } from './agenda/agenda.module';
 
 @Module({
-  imports: [AutologinModule, cadContaModule, controleCaixaModule, DashboardModule, LoginModule, MeusArquivosModule, RecsenhaModule, usuarioModule, VerificaLoginModule, LembreteModule, InscricaopushModule],
+  imports: [AutologinModule, cadContaModule, controleCaixaModule, DashboardModule, LoginModule, MeusArquivosModule, RecsenhaModule, usuarioModule, VerificaLoginModule, LembreteModule, InscricaopushModule, AgendaModule],
   controllers: [AppController, InscricaopushController],
   providers: [AppService, InscricaopushService],
 })
