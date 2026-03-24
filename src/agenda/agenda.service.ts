@@ -2,11 +2,13 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import { Response } from 'express';
 import connection from 'src/database/connection';
 import { diaAgendaType } from 'src/types/globalTypes';
+import notify from 'src/utils/notifyServiceWork';
 import somenteNumeros from 'src/utils/somenteNumeros';
 
 @Injectable()
 export class AgendaService {
 
+    //cria novo agendamento
     async criarNovoAgendamento(body: diaAgendaType, idUsuario: string) {
 
         try {
@@ -66,13 +68,31 @@ export class AgendaService {
                 )
             }
 
+            //envia notificação de novo agendamento
+            const inscricaoUsuario = `
+            SELECT i.inscricao FROM public.inscricaopushuser i
+            WHERE i.userid = $1
+            `
+
+            const inscricao = (await connection.query(inscricaoUsuario, [idUsuario])).rows[0].inscricao
+
+            if (inscricao) {
+
+                notify(inscricao, {
+                    title: "Novo Agendamento Pendente de Aprovação.",
+                    body: `Novo agendamento de ${body.nomeCompleto} para o dia ${body.dia}/${body.mes}`,
+                    data: {
+                        url: process.env.CLIENT + "/home/minha/agenda"
+                    }
+                })
+            }
             return {
-                msg: `Agendameno criado com sucesso, Aguarde a confirmação.`,
+                msg: `Agendamento criado com sucesso, Aguarde a confirmação.`,
                 sucesso: true
             }
         } catch (error) {
 
-
+            console.log(error) 
             if (error instanceof BadRequestException) {
 
                 throw error
@@ -82,6 +102,41 @@ export class AgendaService {
 
                 throw new BadRequestException("Já possuí agendamento nesse intervalo de Data e Hora.")
             }
+
+            throw new InternalServerErrorException()
+        }
+    }
+
+    //carrega a quantidade total de agendamentos por dia do mês selecionado
+    async carregaQtdAgendamentosMensal(mes: string, ano: string, idUsuario: string) {
+
+        try {
+
+            const sqlSelect = `
+           SELECT 
+                id_usuario,
+                EXTRACT(DAY FROM data_inicio::timestamp) as dia,
+                EXTRACT(MONTH FROM data_inicio::timestamp) as mes,
+                EXTRACT(YEAR FROM data_inicio::timestamp) as ano,
+                count(EXTRACT(DAY FROM data_inicio::timestamp)) as qtd_total
+            FROM public.agenda a
+            where id_usuario = $1 
+            and EXTRACT(MONTH FROM data_inicio::timestamp) = $2
+            and EXTRACT(YEAR FROM data_inicio::timestamp) = $3
+            group by id_usuario,
+            EXTRACT(MONTH FROM data_inicio::timestamp),
+            EXTRACT(YEAR FROM data_inicio::timestamp),
+            EXTRACT(DAY FROM data_inicio::timestamp)
+            `
+
+            const agendamentos = await connection.query(sqlSelect, [idUsuario, mes, ano])
+
+            return {
+                msg: "Sucesso ao carregar Quantidade geral de Agendamentos por Dia",
+                sucesso: true,
+                dados: agendamentos.rows
+            }
+        } catch (error) {
 
             throw new InternalServerErrorException()
         }
