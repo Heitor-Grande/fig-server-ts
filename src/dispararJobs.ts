@@ -6,7 +6,7 @@ export default function dispararJobs() {
     setInterval(async function () {
 
         await jobDispararLembretes()
-    }, 30000) // a cada 5 minutos
+    }, 30000) // a cada 30 segundos
 
     //atualiza lembretes diarios para disparado = false
     setInterval(async function () {

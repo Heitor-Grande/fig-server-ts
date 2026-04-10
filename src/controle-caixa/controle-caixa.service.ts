@@ -1,9 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Response } from 'express';
 import connection from 'src/database/connection';
 
 @Injectable()
 export class ControleCaixaService {
-    async carregaMovimentosDoCaixaUsuario(params: any) {
+    async carregaMovimentosDoCaixaUsuario(res: Response) {
         try {
             const SqlSelectMovimento = `
             SELECT 
@@ -17,7 +18,7 @@ export class ControleCaixaService {
             WHERE
             id_usuario = $1
             order by id_movimento DESC`
-            const sqlSelectMovimentoValues = [params.id_usuario]
+            const sqlSelectMovimentoValues = [res.locals.idUsuario]
             const movimentos = (await connection.query(SqlSelectMovimento, sqlSelectMovimentoValues)).rows
             return {
                 message: "Sucesso ao carregar movimentos",
@@ -28,10 +29,9 @@ export class ControleCaixaService {
         }
     }
 
-    async criaNovoMovimentoUsuario(body: any) {
+    async criaNovoMovimentoUsuario(body: any, res: Response) {
         try {
             const inputsMovimento = body.inputsMovimento
-            const id_usuario = body.id_usuario
             const arquivosAnexados = body.arquivosAnexados
             const SqlInsertMovimento = `
             INSERT INTO movimentos
@@ -47,7 +47,7 @@ export class ControleCaixaService {
                 inputsMovimento.valor.replaceAll(".", "").replace(",", "."),
                 inputsMovimento.data,
                 inputsMovimento.tipo,
-                id_usuario
+                res.locals.idUsuario
             ]
             const id_movimento = (await connection.query(SqlInsertMovimento, sqlInsertMovimentoValues)).rows[0].id_movimento
             for (let i = 0; i < arquivosAnexados.length; i = i + 1) {
@@ -57,7 +57,7 @@ export class ControleCaixaService {
                 (name, filebase64, type, size, id_usuario, id_movimento)
                 values($1, $2, $3, $4, $5, $6)
                 `
-                const SqlInsertAnexosMovimentoValues = [arquivo.name, arquivo.fileBase64, arquivo.type, arquivo.size, id_usuario, id_movimento]
+                const SqlInsertAnexosMovimentoValues = [arquivo.name, arquivo.fileBase64, arquivo.type, arquivo.size, res.locals.idUsuario, id_movimento]
                 await connection.query(SqlInsertAnexosMovimento, SqlInsertAnexosMovimentoValues)
             }
             return "Movimento criado com sucesso."
@@ -65,9 +65,9 @@ export class ControleCaixaService {
             throw new HttpException("Erro ao criar movimento.", HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
-    async carregaMovimentoById(params: any) {
+    async carregaMovimentoById(params: any, res: Response) {
         try {
-            const { id_usuario, id_movimento } = params
+            const { id_movimento } = params
             const SqlSelectMovimento = `
             SELECT 
             titulo, 
@@ -81,7 +81,7 @@ export class ControleCaixaService {
             id_usuario = $1 AND
             id_movimento = $2
            `
-            const sqlSelectMovimentoValues = [id_usuario, id_movimento]
+            const sqlSelectMovimentoValues = [res.locals.idUsuario, id_movimento]
             const movimento = (await connection.query(SqlSelectMovimento, sqlSelectMovimentoValues)).rows[0]
             const SqlSelectAnexosMovimento = `
             SELECT 
@@ -95,7 +95,7 @@ export class ControleCaixaService {
             id_movimento
             FROM anexosmovimento where id_usuario = $1 and id_movimento = $2
             `
-            const sqlSelectAnexosMovimentoValues = [id_usuario, id_movimento]
+            const sqlSelectAnexosMovimentoValues = [res.locals.idUsuario, id_movimento]
             const anexosMovimento = (await connection.query(SqlSelectAnexosMovimento, sqlSelectAnexosMovimentoValues)).rows
             return {
                 movimento: movimento,
@@ -106,10 +106,10 @@ export class ControleCaixaService {
         }
     }
     //atauliza movimento do usuario
-    async atualizaMovimentoUsuario(params: any, body: any) {
+    async atualizaMovimentoUsuario(params: any, body: any, res: Response) {
         try {
             const inputsMovimento = body.inputsMovimento
-            const { id_usuario, id_movimento } = params
+            const { id_movimento } = params
             const SqlUpdateMovimento = `
             UPDATE movimentos
             SET
@@ -125,7 +125,7 @@ export class ControleCaixaService {
                 inputsMovimento.tipo,
                 inputsMovimento.valor.replaceAll('.', '').replace(',', '.'),
                 inputsMovimento.data,
-                id_usuario,
+                res.locals.idUsuario,
                 id_movimento,
             ]
             await connection.query(SqlUpdateMovimento, SqlUpdateMovimentoValues)
@@ -135,9 +135,9 @@ export class ControleCaixaService {
         }
     }
     //exclui o movimento do usuario
-    async deletaMovimentoUsuario(params: any) {
+    async deletaMovimentoUsuario(params: any, res: Response) {
         try {
-            const { id_usuario, id_movimento } = params
+            const { id_movimento } = params
             const SqlDeleteMovimento = `
             DELETE FROM movimentos
             WHERE id_movimento = $1 AND id_usuario = $2
@@ -146,18 +146,18 @@ export class ControleCaixaService {
             DELETE FROM anexosmovimento
             WHERE id_movimento = $1 AND id_usuario = $2
           `
-            await connection.query(SqlDeleteMovimento, [id_movimento, id_usuario])
-            await connection.query(SqlDeleteAnexosMovimento, [id_movimento, id_usuario])
+            await connection.query(SqlDeleteMovimento, [id_movimento, res.locals.idUsuario])
+            await connection.query(SqlDeleteAnexosMovimento, [id_movimento, res.locals.idUsuario])
             return 'Movimento excluído com sucesso.'
         } catch (error) {
             throw new HttpException(`Erro ao excluir movimento.`, HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
     //upload de mais arquivos para o movimento
-    async uploadArquivosMovimento(params: any, body: any) {
+    async uploadArquivosMovimento(params: any, body: any, res: Response) {
         try {
             const arquivosAnexados = body.arquivosAnexados
-            const { id_usuario, id_movimento } = params
+            const { id_movimento } = params
             for (const arquivo of arquivosAnexados) {
                 const SqlInsertAnexosMovimento = `
                 INSERT INTO anexosmovimento
@@ -169,7 +169,7 @@ export class ControleCaixaService {
                     arquivo.fileBase64,
                     arquivo.type,
                     arquivo.size,
-                    id_usuario,
+                    res.locals.idUsuario,
                     id_movimento,
                 ]
                 await connection.query(SqlInsertAnexosMovimento, SqlInsertAnexosMovimentoValues)
@@ -180,14 +180,14 @@ export class ControleCaixaService {
         }
     }
     //exclui apenas o arquivo/upload anexado ao movimento
-    async deletarAnexoMovimento(params: any) {
+    async deletarAnexoMovimento(params: any, res: Response) {
         try {
-            const { id_movimento, id_usuario, id_anexo } = params
+            const { id_movimento, id_anexo } = params
             const SqlDeleteAnexosMovimento = `
             DELETE FROM public.anexosmovimento
             WHERE id_movimento = $1 AND id_usuario = $2 AND id_anexo = $3
           `
-            const deleteParams = [id_movimento, id_usuario, id_anexo]
+            const deleteParams = [id_movimento, res.locals.idUsuario, id_anexo]
             await connection.query(SqlDeleteAnexosMovimento, deleteParams)
             return 'Sucesso ao remover anexo do movimento.'
         } catch (error) {

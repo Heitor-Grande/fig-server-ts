@@ -7,14 +7,13 @@ export class VerifyloginusuarioMiddleware implements NestMiddleware {
     //esse token vem com infos do usuario como senha e email
     try {
 
-      const id_usuario = req.params.idUsuario || req.params.id_usuario || req.body.id_usuario || req.body.idUsuario || req.query.idUsuario || req.headers.idusuario
       const decodificado = verify(req.headers.authorization, process.env.JWT_KEY_LOGIN) as {
         idUsuario: string
       }
 
-      if (decodificado.idUsuario == id_usuario) {
+      if (decodificado.idUsuario) {
 
-        res.locals.idUsuario = id_usuario
+        res.locals.idUsuario = decodificado.idUsuario
         next()
       }
       else {

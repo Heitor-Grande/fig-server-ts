@@ -18,8 +18,7 @@ export class LoginService {
                         const tokenLogin = jwtManager.criaJWTLogin(login.email, login.senha, usuarioEncontrado[0].id_usuario)
                         return {
                             message: "Sucesso ao realizar login",
-                            tokenLogin: tokenLogin,
-                            usuario: usuarioEncontrado[0]
+                            tokenLogin: tokenLogin
                         }
                     }
                     else {

@@ -1,9 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Response } from 'express';
 import connection from 'src/database/connection';
 
 @Injectable()
 export class DashboardService {
-    async carregarDashboardsUsuario(params: { id_usuario: string }, body: { dataInicio: string, dataFim: string }) {
+    async carregarDashboardsUsuario(res: Response, body: { dataInicio: string, dataFim: string }) {
         try {
             //Carrega os movimentos, apenas totais
             const SqlSelectTotaisMovimentos = `
@@ -16,7 +17,7 @@ export class DashboardService {
                 and datamovimento >= $2 
                 and datamovimento <= $3
             `
-            const sqlSelectTotaisMovimentosValues = [params.id_usuario, body.dataInicio, body.dataFim]
+            const sqlSelectTotaisMovimentosValues = [res.locals.idUsuario, body.dataInicio, body.dataFim]
             const movimentosTotalizados = (await connection.query(SqlSelectTotaisMovimentos, sqlSelectTotaisMovimentosValues)).rows[0]
             return {
                 movimentosTotalizados: movimentosTotalizados

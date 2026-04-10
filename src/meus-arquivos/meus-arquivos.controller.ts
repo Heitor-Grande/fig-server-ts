@@ -1,19 +1,20 @@
-import { Body, Controller, Get, Param, Post, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Delete, Res } from '@nestjs/common';
 import { MeusArquivosService } from './meus-arquivos.service';
+import { Response } from 'express';
 
 @Controller('meus-arquivos')
 export class MeusArquivosController {
     constructor(private readonly meusArquivosService: MeusArquivosService) { }
-    @Get("/carregar/meus/uploads/:id_usuario")
-    carregarUploadsUsuario(@Param() params: any) {
-        return this.meusArquivosService.carregarUploadUsuarioById(params)
+    @Get("/carregar/meus/uploads")
+    carregarUploadsUsuario(@Res({ passthrough: true }) res: Response) {
+        return this.meusArquivosService.carregarUploadUsuarioById(res)
     }
-    @Post("/novo/upload/arquivos/:id_usuario")
-    subirNovoArquivoUsuario(@Param() params: any, @Body() body: any) {
-        return this.meusArquivosService.criarNovoUpLoad(params, body)
+    @Post("/novo/upload/arquivos")
+    subirNovoArquivoUsuario(@Body() body: any, @Res({ passthrough: true }) res: Response) {
+        return this.meusArquivosService.criarNovoUpLoad(body, res)
     }
-    @Delete("/deletar/arquivo/usuario/:id_usuario/:id_arquivo")
-    excluirArquivo(@Param() params: any) {
-        return this.meusArquivosService.excluirUpload(params)
+    @Delete("/deletar/arquivo/usuario/:id_arquivo")
+    excluirArquivo(@Param() params: any, @Res({ passthrough: true }) res: Response) {
+        return this.meusArquivosService.excluirUpload(params, res)
     }
 }

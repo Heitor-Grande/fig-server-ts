@@ -1,10 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Response } from 'express';
 import connection from 'src/database/connection';
 
 @Injectable()
 export class MeusArquivosService {
     //carrega os arquivos do usuario
-    async carregarUploadUsuarioById(params: any) {
+    async carregarUploadUsuarioById(res: Response) {
         try {
             const SqlSelectArquivosUsuario = `
             SELECT 
@@ -18,7 +19,7 @@ export class MeusArquivosService {
             FROM public.arquivosusuario
             WHERE id_usuario = $1
             `
-            const sqlSelectArquivosUsuarioValues = [params.id_usuario]
+            const sqlSelectArquivosUsuarioValues = [res.locals.idUsuario]
             const arquivos = (await connection.query(SqlSelectArquivosUsuario, sqlSelectArquivosUsuarioValues)).rows
             return arquivos
         } catch (error) {
@@ -26,10 +27,10 @@ export class MeusArquivosService {
         }
     }
     //cria novo arquivo do usuario
-    async criarNovoUpLoad(params: any, body: any) {
+    async criarNovoUpLoad(body: any, res: Response) {
         try {
             const { arquivosImportados } = body
-            const id_usuario = params.id_usuario
+  
             for (let i = 0; i < arquivosImportados.length; i = i + 1) {
                 const arquivo = arquivosImportados[i]
                 const SqlInsertarquivosusuario = `
@@ -37,7 +38,7 @@ export class MeusArquivosService {
                 (id_usuario, filebase64, "name", "type", "size", criacao)
                 VALUES($1, $2, $3, $4, $5, $6)
                 `
-                const sqlInsertArquivoUsuarioValues = [id_usuario, arquivo.fileBase64, arquivo.name, arquivo.type, arquivo.size, 'now()']
+                const sqlInsertArquivoUsuarioValues = [res.locals.idUsuario, arquivo.fileBase64, arquivo.name, arquivo.type, arquivo.size, 'now()']
                 await connection.query(SqlInsertarquivosusuario, sqlInsertArquivoUsuarioValues)
             }
             return "Arquivo(s) importado(s) com sucesso."
@@ -46,14 +47,14 @@ export class MeusArquivosService {
         }
     }
     //exclui um upload do usuario
-    async excluirUpload(params: any) {
+    async excluirUpload(params: any, res: Response) {
         try {
-            const { id_arquivo, id_usuario } = params
+            const { id_arquivo } = params
             const SqlDeleteArquivosUsuario = `
             DELETE FROM arquivosusuario 
             where id_usuario= $1 and id_arquivo = $2
             `
-            const sqlDeleteArquivosUsuarioValues = [id_usuario, id_arquivo]
+            const sqlDeleteArquivosUsuarioValues = [res.locals.idUsuario, id_arquivo]
             await connection.query(SqlDeleteArquivosUsuario, sqlDeleteArquivosUsuarioValues)
             return "Arquivo excluido com sucesso."
         } catch (error) {

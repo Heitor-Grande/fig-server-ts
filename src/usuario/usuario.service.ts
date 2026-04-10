@@ -1,15 +1,16 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Response } from 'express';
 import connection from 'src/database/connection';
 
 @Injectable()
 export class UsuarioService {
-    async carregarUsuarioById(params: any) {
+    async carregarUsuarioById(res: Response) {
         try {
             const sqlSelectUsuario = `
             SELECT * FROM usuario
             WHERE id_usuario = $1
             `
-            const sqlSelectUsuarioValues = [params.id_usuario]
+            const sqlSelectUsuarioValues = [res.locals.idUsuario]
             const usuario = (await connection.query(sqlSelectUsuario, sqlSelectUsuarioValues)).rows[0]
             return usuario
         } catch (error) {

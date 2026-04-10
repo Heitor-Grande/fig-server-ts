@@ -1,13 +1,14 @@
-import { Body, Controller, Get, Param, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put, Res } from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
+import { Response } from 'express';
 
 @Controller('usuario')
 export class UsuarioController {
     constructor(private readonly usuarioService: UsuarioService) { }
     //carrega infos do usuario
-    @Get("/carregar/usuario/:id_usuario")
-    carregarUsuario(@Param() params: any) {
-        return this.usuarioService.carregarUsuarioById(params)
+    @Get("/carregar/usuario")
+    carregarUsuario(@Param() params: any, @Res({ passthrough: true }) res: Response) {
+        return this.usuarioService.carregarUsuarioById(res)
     }
     //atualiza conta do usuario
     @Put("/atualizar/minha/conta/:id_usuario")

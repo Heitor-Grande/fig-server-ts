@@ -1,35 +1,36 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Res } from '@nestjs/common';
 import { ControleCaixaService } from './controle-caixa.service';
+import { Response } from 'express';
 
 @Controller('controle-caixa')
 export class ControleCaixaController {
     constructor(private readonly controleCaixaService: ControleCaixaService) { }
-    @Get("/carregar/movimentos/caixa/:id_usuario")
-    carregaMovimentosUsuario(@Param() params: any) {
-        return this.controleCaixaService.carregaMovimentosDoCaixaUsuario(params)
+    @Get("/carregar/movimentos/caixa")
+    carregaMovimentosUsuario(@Res({ passthrough: true }) res: Response) {
+        return this.controleCaixaService.carregaMovimentosDoCaixaUsuario(res)
     }
     @Post("/criar/novo/movimento")
-    criaNovoMovimentoUsuario(@Body() body: any) {
-        return this.controleCaixaService.criaNovoMovimentoUsuario(body)
+    criaNovoMovimentoUsuario(@Body() body: any, @Res({ passthrough: true }) res: Response) {
+        return this.controleCaixaService.criaNovoMovimentoUsuario(body, res)
     }
-    @Get("/carregar/detalhes/movimento/:id_usuario/:id_movimento")
-    carregaMovimentoById(@Param() params: any) {
-        return this.controleCaixaService.carregaMovimentoById(params)
+    @Get("/carregar/detalhes/movimento/:id_movimento")
+    carregaMovimentoById(@Param() params: any, @Res({ passthrough: true }) res: Response) {
+        return this.controleCaixaService.carregaMovimentoById(params, res)
     }
-    @Put("/atualizar/movimento/:id_usuario/:id_movimento")
-    atualizaMovimentoUsuario(@Param() params: any, @Body() body: any) {
-        return this.controleCaixaService.atualizaMovimentoUsuario(params, body)
+    @Put("/atualizar/movimento/:id_movimento")
+    atualizaMovimentoUsuario(@Param() params: any, @Body() body: any, @Res({ passthrough: true }) res: Response) {
+        return this.controleCaixaService.atualizaMovimentoUsuario(params, body, res)
     }
-    @Delete("/excluir/movimento/:id_usuario/:id_movimento")
-    excluirMovimentoUsuario(@Param() params: any) {
-        return this.controleCaixaService.deletaMovimentoUsuario(params)
+    @Delete("/excluir/movimento/:id_movimento")
+    excluirMovimentoUsuario(@Param() params: any, @Res({ passthrough: true }) res: Response) {
+        return this.controleCaixaService.deletaMovimentoUsuario(params, res)
     }
-    @Put("/upload/arquivo/movimento/:id_movimento/:id_usuario")
-    uploadNovosArquivosMovimento(@Param() params: any, @Body() body: any) {
-        return this.controleCaixaService.uploadArquivosMovimento(params, body)
+    @Put("/upload/arquivo/movimento/:id_movimento")
+    uploadNovosArquivosMovimento(@Param() params: any, @Body() body: any, @Res({ passthrough: true }) res: Response) {
+        return this.controleCaixaService.uploadArquivosMovimento(params, body, res)
     }
-    @Delete("/deletar/arquivo/movimento/:id_movimento/:id_anexo/:id_usuario")
-    deletarUploadDoMovimento(@Param() params: any) {
-        return this.controleCaixaService.deletarAnexoMovimento(params)
+    @Delete("/deletar/arquivo/movimento/:id_movimento/:id_anexo")
+    deletarUploadDoMovimento(@Param() params: any, @Res({ passthrough: true }) res: Response) {
+        return this.controleCaixaService.deletarAnexoMovimento(params, res)
     }
 }
