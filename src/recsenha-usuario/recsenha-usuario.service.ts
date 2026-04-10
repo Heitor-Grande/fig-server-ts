@@ -60,7 +60,8 @@ export class RecsenhaUsuarioService {
                 //email nao encontrado
                 throw new HttpException("E-mail não encontrado.", HttpStatus.NOT_FOUND)
             }
-        } catch (error) {
+        } catch (error: any) {
+            
             throw new HttpException(error.response || "Erro ao verificar token de recuparação", error.status || HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }

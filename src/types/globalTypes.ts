@@ -42,3 +42,10 @@ export interface diaAgendaType {
     observacao: string
     status: string
 }
+
+export interface agendaDiaProps {
+
+    dia: string;
+    mes: string;
+    ano: string;
+}

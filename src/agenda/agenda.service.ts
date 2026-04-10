@@ -1,12 +1,180 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Response } from 'express';
 import connection from 'src/database/connection';
-import { diaAgendaType } from 'src/types/globalTypes';
+import { agendaDiaProps, diaAgendaType } from 'src/types/globalTypes';
+import enviarEmail from 'src/utils/enviarEmail';
 import notify from 'src/utils/notifyServiceWork';
 import somenteNumeros from 'src/utils/somenteNumeros';
+import { gerarHtmlAgendamentoAprovado, gerarHtmlAgendamentoFinalizado, htmlAgendamentoRecusado, htmlEmailAgendamentoRecebido, htmlEmailAguardandoAprovacao } from './htmlEmail';
 
 @Injectable()
 export class AgendaService {
+
+    //finalizar agendamento
+    async finalizarAgendamento(res: Response, idAgendamento: string) {
+
+        try {
+
+            const sqlUpdateAgendamento = `
+            UPDATE public.agenda
+            SET status = 'FINALIZADO'
+            WHERE id_usuario = $1 
+            AND idagendamento = $2
+            RETURNING email,TO_CHAR(data_inicio::timestamp, 'DD/MM/YYYY HH24:MI:SS') as data_formatada
+            `
+
+            const info = (await connection.query(sqlUpdateAgendamento, [res.locals.idUsuario, idAgendamento])).rows[0]
+
+            try {
+
+                const html = gerarHtmlAgendamentoFinalizado(info.data_formatada)
+                await enviarEmail(info.email, "Agendamento Finalizado", html)
+            } catch (error) {
+
+                console.log(error)
+            }
+
+            return {
+                sucesso: true,
+                msg: "Agendamento Finalizado com Sucesso."
+            }
+        } catch (error) {
+
+            console.log(error)
+            throw new InternalServerErrorException()
+        }
+    }
+
+    //aprova o agendamento
+    async aprovarAgendamento(res: Response, idAgendamento: string) {
+
+        try {
+
+            const sqlUpdateAgendamento = `
+            UPDATE public.agenda
+            SET status = 'APROVADO'
+            WHERE id_usuario = $1 
+            AND idagendamento = $2
+            RETURNING email,TO_CHAR(data_inicio::timestamp, 'DD/MM/YYYY HH24:MI:SS') as data_formatada
+            `
+
+            const info = (await connection.query(sqlUpdateAgendamento, [res.locals.idUsuario, idAgendamento])).rows[0]
+
+            try {
+
+                const html = gerarHtmlAgendamentoAprovado(info.data_formatada)
+                await enviarEmail(info.email, "Agendamento Aprovado", html)
+            } catch (error) {
+
+                console.log(error)
+            }
+
+            return {
+                sucesso: true,
+                msg: "Agendamento aprovado com Sucesso."
+            }
+        } catch (error) {
+
+            console.log(error)
+            throw new InternalServerErrorException()
+        }
+    }
+
+    //deleta o agendamento recuso ou cancelado
+    async deletarAgendamento(res: Response, idAgendamento: string) {
+
+        try {
+
+            const sqlDeleteAgendamento = `
+            DELETE FROM public.agenda 
+            WHERE id_usuario = $1 
+            AND idagendamento = $2
+            RETURNING email;
+            `
+
+            const info = await connection.query(sqlDeleteAgendamento, [res.locals.idUsuario, idAgendamento])
+
+            try {
+                await enviarEmail(info.rows[0].email, "Agendamento Recusado ou Cancelado", htmlAgendamentoRecusado)
+            } catch (error) {
+
+                console.log(error)
+            }
+            return {
+                sucesso: true,
+                msg: "Sucesso ao remover agendamento da sua Agenda."
+            }
+        } catch (error) {
+
+            throw new InternalServerErrorException()
+        }
+    }
+
+    //carregar agendamento unico detalhado
+    async carregarAgendamentoDiaDetalhado(res: Response, idAgendamento: string) {
+
+        try {
+
+            const sqlSelectAgendamentoDetalhado = `
+            SELECT 
+            idagendamento, 
+            data_inicio, 
+            data_fim, 
+            id_usuario, 
+            observacao, 
+            status, 
+            data_criacao, data_aprovacao, cpf, nome_completo, celular, email
+            FROM public.agenda where idagendamento = $1 and id_usuario = $2
+            `
+
+            const agendamento = (await connection.query(sqlSelectAgendamentoDetalhado, [idAgendamento, res.locals.idUsuario])).rows[0]
+
+            if (agendamento) {
+
+                return {
+                    sucesso: true,
+                    msg: "Agendamento encontrado com Sucesso.",
+                    dado: agendamento
+                }
+            }
+            else {
+
+                throw new BadRequestException("Agendamento não Encontrado.")
+            }
+        } catch (error) {
+
+            throw new InternalServerErrorException()
+        }
+    }
+
+    //carrega os agendamentos do dia 
+    async carregarAgendamentosDoDia(body: agendaDiaProps, idUsuario: string) {
+
+        try {
+
+            const sqlSelectAgendaDia = `
+            SELECT 
+            idagendamento, 
+            data_inicio, 
+            data_fim,
+            status
+            FROM public.agenda
+            where data_inicio like '%' || $1 || '%' and id_usuario = $2
+            `
+
+            const dataInicio = `${body.ano}-${body.mes}-${body.dia}`
+            const agendamentosDia = (await connection.query(sqlSelectAgendaDia, [dataInicio, idUsuario])).rows
+
+            return {
+                sucesso: true,
+                dados: agendamentosDia,
+                msg: "Sucesso ao carregar agenda do dia."
+            }
+        } catch (error) {
+
+            throw new InternalServerErrorException()
+        }
+    }
 
     //cria novo agendamento
     async criarNovoAgendamento(body: diaAgendaType, idUsuario: string) {
@@ -28,7 +196,7 @@ export class AgendaService {
                 )
             }
 
-            if (body.id === "novo") {
+            if (body.id == null || body.id == undefined) {
 
                 const sqlInsertAgenda = `
             INSERT INTO public.agenda
@@ -70,15 +238,16 @@ export class AgendaService {
 
             //envia notificação de novo agendamento
             const inscricaoUsuario = `
-            SELECT i.inscricao FROM public.inscricaopushuser i
+            SELECT i.inscricao, u.email FROM public.inscricaopushuser i
+            INNER JOIN public.usuario u ON u.id_usuario = i.userid
             WHERE i.userid = $1
             `
 
-            const inscricao = (await connection.query(inscricaoUsuario, [idUsuario])).rows[0].inscricao
+            const inscricao = (await connection.query(inscricaoUsuario, [idUsuario])).rows[0]
 
-            if (inscricao) {
+            if (inscricao.inscricao) {
 
-                notify(inscricao, {
+                notify(inscricao.inscricao, {
                     title: "Novo Agendamento Pendente de Aprovação.",
                     body: `Novo agendamento de ${body.nomeCompleto} para o dia ${body.dia}/${body.mes}`,
                     data: {
@@ -86,13 +255,24 @@ export class AgendaService {
                     }
                 })
             }
+
+            try {
+
+                //comunica o USUARIO que tem agendamento apra aprovar
+                await enviarEmail(inscricao.email, "Agendamento - Aguardando Aprovação", htmlEmailAguardandoAprovacao)
+
+                await enviarEmail(body.email, "Agendamento Solicitado - Aguardando Aprovação", htmlEmailAgendamentoRecebido)
+            } catch (error) {
+
+                console.log(error)
+            }
+
             return {
                 msg: `Agendamento criado com sucesso, Aguarde a confirmação.`,
                 sucesso: true
             }
-        } catch (error) {
+        } catch (error: any) {
 
-            console.log(error) 
             if (error instanceof BadRequestException) {
 
                 throw error
