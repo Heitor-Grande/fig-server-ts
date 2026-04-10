@@ -22,7 +22,7 @@ export class VerifyloginusuarioMiddleware implements NestMiddleware {
       }
     } catch (error) {
 
-      throw new HttpException("Erro verificar token de login", HttpStatus.FORBIDDEN)
+      throw new HttpException("Faça o login novamente.", HttpStatus.FORBIDDEN)
     }
   }
 }
