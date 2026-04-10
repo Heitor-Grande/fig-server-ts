@@ -18,7 +18,7 @@ export class UsuarioService {
         }
     }
     //função para atualizar dados da conta
-    async atualizarUsuarioById(params: any, body: any) {
+    async atualizarUsuarioById(res: Response, body: any) {
         try {
             const sqlUpdateUsuario = `
             UPDATE usuario
@@ -28,7 +28,7 @@ export class UsuarioService {
                 avatar = $3
                 WHERE id_usuario = $4
             `
-            const sqlUpdateUsuarioValues = [body.inputsConta.nome, body.inputsConta.email, body.inputsConta.avatar, params.id_usuario]
+            const sqlUpdateUsuarioValues = [body.inputsConta.nome, body.inputsConta.email, body.inputsConta.avatar, res.locals.idUsuario]
             await connection.query(sqlUpdateUsuario, sqlUpdateUsuarioValues)
             return "Sucesso ao atualizar dados da conta."
         } catch (error) {

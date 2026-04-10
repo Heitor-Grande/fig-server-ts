@@ -7,12 +7,12 @@ export class UsuarioController {
     constructor(private readonly usuarioService: UsuarioService) { }
     //carrega infos do usuario
     @Get("/carregar/usuario")
-    carregarUsuario(@Param() params: any, @Res({ passthrough: true }) res: Response) {
+    carregarUsuario(@Res({ passthrough: true }) res: Response) {
         return this.usuarioService.carregarUsuarioById(res)
     }
     //atualiza conta do usuario
-    @Put("/atualizar/minha/conta/:id_usuario")
-    atualiarUsuario(@Param() params: any, @Body() body: any) {
-        return this.usuarioService.atualizarUsuarioById(params, body)
+    @Put("/atualizar/minha/conta")
+    atualiarUsuario(@Res({ passthrough: true }) res: Response, @Body() body: any) {
+        return this.usuarioService.atualizarUsuarioById(res, body)
     }
 }
